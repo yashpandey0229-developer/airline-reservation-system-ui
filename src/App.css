@@ -1,0 +1,206 @@
+body {
+  font-family: sans-serif;
+  padding: 20px;
+}
+
+.flight-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.flight-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  width: 300px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.flight-card h2 {
+  margin-top: 0;
+}
+/* --- Add this at the end of App.css --- */
+
+.search-container {
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.search-container h2 {
+    margin: 0 20px 0 0;
+    font-size: 1.2em;
+}
+
+.search-container input {
+  padding: 12px;
+  border-radius: 5px;
+  border: 1px solid #555;
+  background-color: #333;
+  color: white;
+  font-size: 16px;
+  flex-grow: 1; /* Makes input fields take up available space */
+}
+
+.search-container button {
+  padding: 12px 20px;
+  border-radius: 5px;
+  border: none;
+  background-color: #61dafb;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.booking-page {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  border-radius: 12px;
+}
+
+.booking-form {
+  margin-top: 30px;
+}
+
+.booking-form input {
+  display: block;
+  width: 95%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 5px;
+  border: 1px solid #555;
+  background-color: #333;
+  color: white;
+  font-size: 16px;
+}
+.booking-form select {
+  display: block;
+  width: 95%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 5px;
+  border: 1px solid #555;
+  background-color: #333;
+  color: white;
+  font-size: 16px;
+}
+.booking-form button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 5px;
+  border: none;
+  background-color: #f0ad4e;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.booking-status {
+    margin-top: 20px;
+    font-weight: bold;
+    color: #61dafb;
+}
+.booking-card {
+  background-color: rgba(20, 30, 40, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.status-confirmed {
+  color: #5cb85c; /* A green color for confirmed status */
+  font-weight: bold;
+}
+/* Add this CSS and remove the old .book-now-btn and .delete-btn styles */
+.card-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.card-buttons button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.book-now-btn { background-color: #f0ad4e; } /* Orange */
+.edit-btn { background-color: #337ab7; } /* Blue */
+.delete-btn { 
+    background-color: #d9534f; /* Red */
+    grid-column: 1 / -1; /* Makes delete button span full width */
+}
+.customer-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.customer-card {
+  background-color: rgba(20, 30, 40, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+}
+.cancel-btn {
+  width: 100%;
+  padding: 10px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #d9534f; /* Red color */
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+.auth-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 50px;
+}
+.auth-form {
+    width: 400px;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    padding: 40px;
+    border-radius: 12px;
+}
+.auth-form input { /* Reuse existing form styles */
+    display: block; width: 95%; padding: 12px;
+    margin-bottom: 12px; border-radius: 5px;
+    border: 1px solid #555; background-color: #333;
+    color: white; font-size: 16px;
+}
+.auth-form button { /* Reuse existing form styles */
+    background-color: #61dafb; color: black;
+    width: 100%; padding: 12px;
+    font-weight: bold; cursor: pointer; margin-top: 10px;
+    border: none; border-radius: 5px; font-size: 16px;
+}
+.auth-message {
+    margin-top: 15px;
+    color: #61dafb;
+    text-align: center;
+}
