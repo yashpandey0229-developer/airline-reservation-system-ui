@@ -1,29 +1,26 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // <-- 1. IMPORT KAREIN
+import { useAuth } from '../context/AuthContext'; // 1. IMPORT KAREIN
 
 function EditFlightPage() {
   const { flightId } = useParams();
   const navigate = useNavigate();
   const [flightData, setFlightData] = useState(null);
-  const { token } = useAuth(); // <-- 2. TOKEN KO CONTEXT SE LEIN
+  const { token } = useAuth(); // 2. TOKEN KO CONTEXT SE LEIN
 
-  // 1. Fetch the existing flight data
+  // GET request public hai, isliye yahan token ki zaroorat nahi hai
   useEffect(() => {
-    // Note: GET requests are public, isliye yahan token ki zaroorat nahi hai
     fetch(`http://localhost:8081/flights/${flightId}`)
       .then(res => res.json())
       .then(data => setFlightData(data))
       .catch(error => console.error("Failed to fetch flight", error));
   }, [flightId]);
 
-  // 2. Handle changes in the form inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFlightData({ ...flightData, [name]: value });
   };
 
-  // 3. Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -32,7 +29,7 @@ function EditFlightPage() {
       method: 'PUT',
       headers: { 
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` // <-- 3. TOKEN KO HEADER MEIN BHEJEIN
+        'Authorization': `Bearer ${token}` // 3. TOKEN KO HEADER MEIN BHEJEIN
       },
       body: JSON.stringify({
          ...flightData,

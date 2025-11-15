@@ -1,68 +1,70 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // 1. IMPORT KAREIN
 import '../App.css';
 
 function CustomersPage() {
   const [customers, setCustomers] = useState([]);
   const [customerData, setCustomerData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneNumber: '',
+    firstName: '', lastName: '', email: '', phoneNumber: '',
   });
+  const { token } = useAuth(); // 2. TOKEN KO LEIN
 
-  // --- Function to fetch all customers ---
   const fetchCustomers = () => {
-    fetch('http://localhost:8081/customers/all')
+    if (!token) return;
+    fetch('http://localhost:8081/customers/all', {
+        headers: { 'Authorization': `Bearer ${token}` } // 3. TOKEN BHEJEIN
+    })
       .then(response => response.json())
       .then(data => setCustomers(data))
       .catch(error => console.error('Error fetching customers:', error));
   };
 
-  // --- Fetch customers when the page first loads ---
   useEffect(() => {
     fetchCustomers();
-  }, []);
+  }, [token]);
 
-  // --- Function to handle typing in the form ---
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCustomerData({ ...customerData, [name]: value });
-  };
-
-  // --- Function to handle submitting the form to add a new customer ---
+  const handleChange = (e) => { /* ... yeh waisa hi rahega ... */ };
   const handleSubmit = (e) => {
     e.preventDefault();
     fetch('http://localhost:8081/customers/add', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // 3. TOKEN BHEJEIN
+      },
       body: JSON.stringify(customerData),
     })
     .then(response => response.json())
     .then(() => {
-      fetchCustomers(); // Refresh the customer list
-      setCustomerData({ firstName: '', lastName: '', email: '', phoneNumber: '' }); // Clear the form
+      fetchCustomers();
+      setCustomerData({ firstName: '', lastName: '', email: '', phoneNumber: '' });
     })
     .catch(error => console.error('Error adding customer:', error));
   };
 
-  // --- Function to handle customer deletion ---
   const handleDelete = (customerId) => {
     if (window.confirm('Are you sure you want to delete this customer?')) {
-      fetch(`http://localhost:8081/customers/delete/${customerId}`, { method: 'DELETE' })
+      fetch(`http://localhost:8081/customers/delete/${customerId}`, { 
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` } // 3. TOKEN BHEJEIN
+      })
         .then(response => {
-          if (response.ok) {
-            fetchCustomers(); // Refresh the list after deleting
-          } else {
-            alert('Failed to delete customer.');
-          }
+          if (response.ok) fetchCustomers();
+          else alert('Failed to delete customer.');
         });
     }
   };
 
+  // handleChange ko define karein
+  handleChange = (e) => {
+    const { name, value } = e.target;
+    setCustomerData({ ...customerData, [name]: value });
+  };
+
   return (
     <div>
-      {/* The form to add a new customer */}
+      {/* ... Aapka baaki ka JSX (form, list) waisa hi rahega ... */}
       <form onSubmit={handleSubmit} className="add-flight-form">
         <h2>Add a New Customer</h2>
         <input name="firstName" value={customerData.firstName} onChange={handleChange} placeholder="First Name" required />
@@ -71,9 +73,7 @@ function CustomersPage() {
         <input name="phoneNumber" value={customerData.phoneNumber} onChange={handleChange} placeholder="Phone Number" required />
         <button type="submit">Add Customer</button>
       </form>
-
       <hr />
-
       <h1>All Customers</h1>
       <div className="customer-list">
         {customers.map(customer => (

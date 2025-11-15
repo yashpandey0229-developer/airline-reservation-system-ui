@@ -9,28 +9,38 @@ function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleLogin = async (e) => {
+  // LoginPage.jsx ke andar
+const handleLogin = async (e) => {
     e.preventDefault();
     setMessage('Logging in...');
     try {
-      const response = await fetch('http://localhost:8081/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
+        const response = await fetch('http://localhost:8081/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+        });
 
-      if (response.ok) {
-        const data = await response.json();
-        login({ username, token: data.token });
-        navigate('/');
-      } else {
-        const errorText = await response.text();
-        setMessage(errorText);
-      }
+        if (response.ok) {
+            const data = await response.json(); // data mein ab { token, username, roles } hai
+
+            // --- YEH HAI ASLI CHANGE ---
+            // Poora data object (token, username, roles) login function ko dein
+            login({ 
+                token: data.token, 
+                username: data.username, 
+                roles: data.roles 
+            });
+            // --- CHANGE END ---
+
+            navigate('/');
+        } else {
+            const errorText = await response.text();
+            setMessage(errorText);
+        }
     } catch (error) {
-      setMessage('Login failed due to a network error.');
+        setMessage('Login failed due to a network error.');
     }
-  };
+};
 
   return (
     <div className="auth-form-container">

@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // 1. IMPORT KAREIN
 
 function BookingPage() {
   const { flightId } = useParams();
   const [flight, setFlight] = useState(null);
-  const [customers, setCustomers] = useState([]); // <-- NEW: State to hold the list of customers
-  const [selectedCustomer, setSelectedCustomer] = useState(''); // <-- NEW: State for the selected customer ID
+  const [customers, setCustomers] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState('');
   const [seats, setSeats] = useState(1);
   const [bookingStatus, setBookingStatus] = useState('');
+  const { token } = useAuth(); // 2. TOKEN KO LEIN
 
-  // This will now fetch both the flight details AND the list of all customers
   useEffect(() => {
+    // GET requests public hain, inhein token ki zaroorat nahi hai
     Promise.all([
       fetch(`http://localhost:8081/flights/${flightId}`),
-      fetch(`http://localhost:8081/customers/all`)
+      fetch(`http://localhost:8081/customers/all`) // Yeh bhi protected hai, hum isey agle step mein fix karenge
     ])
     .then(([flightRes, customersRes]) => 
       Promise.all([flightRes.json(), customersRes.json()])
@@ -33,10 +35,15 @@ function BookingPage() {
     }
     setBookingStatus('Processing...');
     
-    // Use the selectedCustomer state for the API call
     const url = `http://localhost:8081/bookings/create?flightId=${flightId}&customerId=${selectedCustomer}&seats=${seats}`;
 
-    fetch(url, { method: 'POST' })
+    // --- YEH HAI ASLI FIX ---
+    fetch(url, { 
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}` // 3. TOKEN KO HEADER MEIN BHEJEIN
+        }
+    })
       .then(response => {
         if (!response.ok) {
           return response.text().then(text => { throw new Error(text) });
@@ -57,22 +64,16 @@ function BookingPage() {
 
   return (
     <div className="booking-page">
+      {/* ... Aapka baaki ka JSX (flight details, form) waisa hi rahega ... */}
       <h1>Book a Flight</h1>
       <div className="flight-card">
         <h2>{flight.flightNumber}</h2>
         <p>{flight.departureAirport} to {flight.arrivalAirport}</p>
         <p>Price per seat: ₹{flight.price}</p>
       </div>
-
       <form onSubmit={handleBooking} className="booking-form">
         <h3>Confirm Your Booking</h3>
-        
-        {/* --- NEW: Replaced text input with a dropdown menu --- */}
-        <select 
-          value={selectedCustomer} 
-          onChange={(e) => setSelectedCustomer(e.target.value)} 
-          required
-        >
+        <select value={selectedCustomer} onChange={(e) => setSelectedCustomer(e.target.value)} required>
           <option value="" disabled>Select a Customer</option>
           {customers.map(customer => (
             <option key={customer.customerId} value={customer.customerId}>
@@ -80,18 +81,9 @@ function BookingPage() {
             </option>
           ))}
         </select>
-        
-        <input 
-          type="number" 
-          min="1" 
-          value={seats} 
-          onChange={(e) => setSeats(e.target.value)} 
-          placeholder="Number of Seats" 
-          required 
-        />
+        <input type="number" min="1" value={seats} onChange={(e) => setSeats(e.target.value)} placeholder="Number of Seats" required />
         <button type="submit">Confirm Booking</button>
       </form>
-
       {bookingStatus && <p className="booking-status">{bookingStatus}</p>}
     </div>
   );

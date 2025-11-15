@@ -1,30 +1,45 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext'; // 1. IMPORT KAREIN
 import '../App.css';
 
 function MyBookingsPage() {
   const [bookings, setBookings] = useState([]);
+  const { token } = useAuth(); // 2. TOKEN KO LEIN
 
   const fetchBookings = () => {
-    fetch('http://localhost:8081/bookings/all')
-      .then(response => response.json())
+    if (!token) return; // Agar token nahi hai toh request na karein
+    
+    // --- YEH HAI ASLI FIX (FETCH) ---
+    fetch('http://localhost:8081/bookings/all', {
+        headers: {
+            'Authorization': `Bearer ${token}` // 3. TOKEN KO HEADER MEIN BHEJEIN
+        }
+    })
+      .then(response => {
+        if (!response.ok) throw new Error('Could not fetch bookings');
+        return response.json();
+      })
       .then(data => setBookings(data))
       .catch(error => console.error('Error fetching bookings:', error));
   };
 
   useEffect(() => {
     fetchBookings();
-  }, []);
+  }, [token]); // Token par depend karein
 
-  // --- NEW: Function to handle booking cancellation ---
+  // --- YEH HAI ASLI FIX (CANCEL) ---
   const handleCancelBooking = (bookingId) => {
     if (window.confirm('Are you sure you want to cancel this booking?')) {
       fetch(`http://localhost:8081/bookings/cancel/${bookingId}`, {
         method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}` // 3. TOKEN KO HEADER MEIN BHEJEIN
+        }
       })
       .then(response => {
         if (response.ok) {
           alert('Booking canceled successfully!');
-          fetchBookings(); // Refresh the list of bookings
+          fetchBookings(); // List ko refresh karein
         } else {
           alert('Failed to cancel booking.');
         }
@@ -46,8 +61,6 @@ function MyBookingsPage() {
             <p><strong>Flight:</strong> {booking.flight.flightNumber} ({booking.flight.departureAirport} to {booking.flight.arrivalAirport})</p>
             <p><strong>Seats Booked:</strong> {booking.numberOfSeats}</p>
             <p><strong>Status:</strong> <span className="status-confirmed">{booking.status}</span></p>
-
-            {/* --- NEW: Cancel Button --- */}
             <button 
               onClick={() => handleCancelBooking(booking.bookingId)} 
               className="cancel-btn"
